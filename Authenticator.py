@@ -7,10 +7,11 @@ Authenticates a given session for Twitter. Logs into "antonini3" :)
 '''
 class Authenticator:
     def __init__(self):
-        consumer_key = 'pLrNhYtZ1fejZp6ieXBESWdL3'
-        consumer_secret = 'nM3VY8IPdhezYwYXFH7u2EcWFVCwg4a3U0PXlsp0GUF2pn94mH'
-        access_token = '21001149-wyjVaXQFOdvbbK8ok70X9wu5zinilSnRojaoFtBI9'
-        access_token_secret = 'LyxbkfaxKIuU8K1TfrPWF8BvOSoeRzUr1aUIs0n1fjQkH'
+        # access token owners here is LBronner
+        consumer_key = 'OnbNyAnpA1C7W6fOMw1GgUkva'
+        consumer_secret = 'BmZdMP2HJcDX0BneJxumHgOj7A8l6UbfKiybV40FUqURl4XOdx'
+        access_token = '21001149-R7oOHcOUDW6qyjhEbP2lNRlXEidF2K90Ky9GCAAb3'
+        access_token_secret = 'Oinb7yjzbi1cRuy8rrYckfZP49ebjj5aqx3phVQrVL7wZ'
 
         self.auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         self.auth.set_access_token(access_token, access_token_secret)
