@@ -1,11 +1,11 @@
 import tweepy
 
 '''
-CLASS: Authenticator
+CLASS: TwitterAuthenticator
 -------------------
 Authenticates a given session for Twitter. Logs into "antonini3" :)
 '''
-class Authenticator:
+class TwitterAuthenticator:
     def __init__(self):
         # access token owners here is LBronner
         consumer_key = 'OnbNyAnpA1C7W6fOMw1GgUkva'
