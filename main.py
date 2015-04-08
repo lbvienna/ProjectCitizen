@@ -19,7 +19,7 @@ def main():
         print "------"
 
     tweet_set = set()
-    twitter_file = open('twitter_file.txt', 'w')
+    twitter_file = open('test_tweet_file.txt', 'w')
     for topic in tweets_by_topic:
         for tweet in tweets_by_topic[topic]:
             json_tweet = json.dumps(tweet)

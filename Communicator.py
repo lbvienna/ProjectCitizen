@@ -20,13 +20,13 @@ class TwitterCommunicator:
     def get_geolocation(self, location):
         geolocator = geocoders.Nominatim()
         try:
-            location = geolocator.geocode(location)
+            loc = geolocator.geocode(location)
+        except Geocoder.TimedOut as e:
+            print "Error: geocode failed on input %s with message %s"%(location, e.msg)
         except ValueError, e:
             print e
-        except geocoders.google.GQueryError, e:
-            print e
 
-        return location.latitude, location.longitude
+        return loc.latitude, loc.longitude
 
     #location: City State
     def get_tweets(self, query, location, language = 'en'):

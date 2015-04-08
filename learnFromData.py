@@ -1,13 +1,12 @@
 import csv
-import re
 import nltk
 import pickle
-import random
-import json
+import tweetHandler
+import stopWords
 
 def main(filename):
-    stopWords = getStopWords()
-    tweets, featureList = readData(filename, stopWords)
+    stopWordsList = stopWords.getStopWords()
+    tweets, featureList = getData(filename, stopWordsList)
 
     def extract_features(tweet):
         tweet_words = set(tweet)
@@ -18,28 +17,17 @@ def main(filename):
 
     training_data = nltk.classify.util.apply_features(extract_features, tweets)
     NBClassifier = nltk.NaiveBayesClassifier.train(training_data)
-    print NBClassifier.show_most_informative_features(10)
     print "trained"
 
-    twitter_file = open("twitter_file.txt", 'r')
-    for tweet_string in twitter_file:
-        tweet = json.loads(tweet_string)
-        unprocessed_tweet = tweet['text']
-        processed_tweet = processTweet(unprocessed_tweet)
-        print processed_tweet
-        print NBClassifier.classify(extract_features(getFeatureVector(processed_tweet, stopWords)))
-    #f = open("NaiveBayesClassifier.pickle", 'wb')
-    #pickle.dump(NBClassifier, f)
-    #f.close()
-    #import pickle
-    #f = open('my_classifier.pickle')
-    #classifier = pickle.load(f)
-    #f.close()
+    classifierFile = open("NaiveBayesClassifier.pickle", 'wb')
+    pickle.dump(NBClassifier, classifierFile)
+    classifierFile.close()
 
-    #print NBClassifier.show_most_informative_features(10)
+    featureFile = open("Features.txt", 'wb')
+    for feature in featureList:
+        print>>featureFile, feature
 
-
-def readData(filename, stopWords):
+def getData(filename, stopWords):
     input_tweets = csv.reader(open('SentimentAnalysisDataset.csv', 'rb'), delimiter=',')
 
     tweets = []
@@ -47,85 +35,17 @@ def readData(filename, stopWords):
     i = 0
     for row in input_tweets:
         #so we don't have too much data for testing purposes
-        if i == 3000:
+        if i == 100000:
             break
-        if i % 100 == 0:
-            print i
         sentiment = row[1]
         tweet = row[3]
-        processedTweet = processTweet(tweet)
-        featureVector = getFeatureVector(processedTweet, stopWords)
+        processedTweet = tweetHandler.processTweet(tweet)
+        featureVector = tweetHandler.getFeatureVector(processedTweet, stopWords)
         #so that we have a list of all features
         for word in featureVector:
             featureList.add(word)
         tweets.append((featureVector, sentiment))
         i = i + 1
     return tweets, list(featureList)
-
-#start replaceTwoOrMore
-def replaceTwoOrMore(s):
-    #look for 2 or more repetitions of character and replace with the character itself
-    pattern = re.compile(r"(.)\1{1,}", re.DOTALL)
-    return pattern.sub(r"\1\1", s)
-
-def getStopWords():
-    #st = open('stopwordsfile.txt', 'r') #check if needed
-    stopWords = getStopWordList('stopwordsfile.txt')
-    return stopWords
-
-#start getStopWordList
-def getStopWordList(stopWordListFileName):
-    #read the stopwords file and build a list
-    stopWords = []
-    stopWords.append('AT_USER')
-    stopWords.append('URL')
-
-    fp = open(stopWordListFileName, 'r')
-    line = fp.readline()
-    while line:
-        word = line.strip()
-        stopWords.append(word)
-        line = fp.readline()
-    fp.close()
-    print "got stopWords"
-    return stopWords
-
-#start getfeatureVector
-def getFeatureVector(tweet, stopWords):
-    featureVector = []
-    #split tweet into words
-    words = tweet.split()
-    for w in words:
-        #replace two or more with two occurrences
-        w = replaceTwoOrMore(w)
-        #strip punctuation
-        w = w.strip('\'"?,.')
-        #check if the word stats with an alphabet
-        val = re.search(r"^[a-zA-Z][a-zA-Z0-9]*$", w)
-        #ignore if it is a stop word
-        if(w in stopWords or val is None):
-            continue
-        else:
-            featureVector.append(w.lower())
-    return featureVector
-#end
-
-#start process_tweet
-def processTweet(tweet):
-    # process the tweets
-
-    #Convert to lower case
-    tweet = tweet.lower()
-    #Convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
-    #Convert @username to AT_USER
-    tweet = re.sub('@[^\s]+','AT_USER',tweet)
-    #Remove additional white spaces
-    tweet = re.sub('[\s]+', ' ', tweet)
-    #Replace #word with word
-    tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
-    #trim
-    tweet = tweet.strip('\'"')
-    return tweet
 
 main('SentimentAnalysisDataset.csv')
