@@ -17,4 +17,11 @@ def main():
             print "\n"
         print "------"
 
-main()
+def locations():
+    location = "San Mateo CA"
+    twitterCommunicator = TwitterCommunicator()
+    topics = twitterCommunicator.find_trends(location)
+    print topics
+
+locations()
+#main()
