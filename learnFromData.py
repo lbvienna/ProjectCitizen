@@ -1,7 +1,9 @@
 import csv
 import re
 import nltk
-
+import pickle
+import random
+import json
 
 def main(filename):
     stopWords = getStopWords()
@@ -14,21 +16,40 @@ def main(filename):
             features['contains(%s)' % word] = (word in tweet_words)
         return features
 
-    training_set = nltk.classify.util.apply_features(extract_features, tweets)
-    NBClassifier = nltk.NaiveBayesClassifier.train(training_set)
+    training_data = nltk.classify.util.apply_features(extract_features, tweets)
+    NBClassifier = nltk.NaiveBayesClassifier.train(training_data)
     print NBClassifier.show_most_informative_features(10)
+    print "trained"
+
+    twitter_file = open("twitter_file.txt", 'r')
+    for tweet_string in twitter_file:
+        tweet = json.loads(tweet_string)
+        unprocessed_tweet = tweet['text']
+        processed_tweet = processTweet(unprocessed_tweet)
+        print processed_tweet
+        print NBClassifier.classify(extract_features(getFeatureVector(processed_tweet, stopWords)))
+    #f = open("NaiveBayesClassifier.pickle", 'wb')
+    #pickle.dump(NBClassifier, f)
+    #f.close()
+    #import pickle
+    #f = open('my_classifier.pickle')
+    #classifier = pickle.load(f)
+    #f.close()
+
+    #print NBClassifier.show_most_informative_features(10)
 
 
 def readData(filename, stopWords):
     input_tweets = csv.reader(open('SentimentAnalysisDataset.csv', 'rb'), delimiter=',')
+
     tweets = []
     featureList = set()
     i = 0
     for row in input_tweets:
         #so we don't have too much data for testing purposes
-        if i == 10000:
+        if i == 3000:
             break
-        if i % 10000 == 0:
+        if i % 100 == 0:
             print i
         sentiment = row[1]
         tweet = row[3]
