@@ -19,10 +19,14 @@ def classify(tweets, classifier):
 
     for tweet in tweets:
         print tweet
-        dist = classifier.prob_classify(extract_features(tweet))
-        for label in dist.samples():
-            print("%s: %f" % (label, dist.prob(label)))
-        print classifier.classify(extract_features(tweet))
+        #dist = classifier.prob_classify(extract_features(tweet))
+        #for label in dist.samples():
+            #print("%s: %f" % (label, dist.prob(label)))
+        sent = classifier.classify(extract_features(tweet))
+        if sent == '0':
+            print "negative"
+        else:
+            print "positive"
 
     '''
     test_tweet = "musicmonday followfriday laugh"
